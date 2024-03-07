@@ -8,6 +8,7 @@
 #include <ctime>
 #include <iostream>
 #include <string>
+#include <random>
 #include <unordered_map>
 
 #define VELOCITY 0.01667f
@@ -24,7 +25,6 @@ enum BALL_TYPE
 class BallFlyweight
 {
 public:
-    
     friend class Ball_Context;
     friend class BallFlyweightFactory;
 
@@ -106,7 +106,7 @@ private:
 class BallSimulator : public Fl_Widget
 {
 public:
-    BallSimulator(int x, int y, int w, int h) : Fl_Widget(x, y, w, h, "") { srand(time(nullptr)); }
+    BallSimulator(int x, int y, int w, int h) : Fl_Widget(x, y, w, h, ""), gen(rd()), dist(300, 150) { srand(time(nullptr)); }
 
     void setBallType(BALL_TYPE type)
     {
@@ -141,8 +141,9 @@ public:
             int i = 5; // creates 5 balls at a time
             while (i--)
             {
-                float vel_x = (rand() % 100);
-                float vel_y = (rand() % 100);
+                int sign = ((rand() % 2) == 0) ? 1 : -1;
+                float vel_x = sign * dist(gen);
+                float vel_y = sign * dist(gen);
                 float radius = 25.0;
                 float centerX = Fl::event_x();
                 float centerY = Fl::event_y();
@@ -169,6 +170,9 @@ public:
 private:
     std::vector<Ball_Context *> particles;
     BALL_TYPE current_type = SOCCERBALL;
+    std::random_device rd;
+    std::mt19937 gen;
+    std::normal_distribution<> dist;
 };
 
 /* creates radio button for Ball types choices */

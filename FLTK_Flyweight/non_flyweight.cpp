@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <random>
 
 #define VELOCITY 0.01667f
 
@@ -87,7 +88,7 @@ private:
 class BallSimulator : public Fl_Widget
 {
 public:
-    BallSimulator(int x, int y, int w, int h) : Fl_Widget(x, y, w, h, "") { srand(time(nullptr)); }
+    BallSimulator(int x, int y, int w, int h) : Fl_Widget(x, y, w, h, ""), gen(rd()), dist(300, 150) { srand(time(nullptr)); }
 
     void setBallType(BALL_TYPE type)
     {
@@ -97,14 +98,14 @@ public:
     // Add a particle to the simulation
     Ball_Context *addParticle(float x, float y, float vx, float vy, float radius)
     {
-        BallFlyweight *ballState ;
-        
-        if(current_type == BEACHBALL)
-            ballState= new BallFlyweight("ball_beach.png",25);
-        else if(current_type == BASKETBALL)
-            ballState= new BallFlyweight("ball_basket.png",25);
-        else if(current_type == SOCCERBALL)
-            ballState= new BallFlyweight("ball_soccer.png",25);
+        BallFlyweight *ballState;
+
+        if (current_type == BEACHBALL)
+            ballState = new BallFlyweight("ball_beach.png", 25);
+        else if (current_type == BASKETBALL)
+            ballState = new BallFlyweight("ball_basket.png", 25);
+        else if (current_type == SOCCERBALL)
+            ballState = new BallFlyweight("ball_soccer.png", 25);
 
         Ball_Context *ball = new Ball_Context(x, y, vx, vy, radius, ballState);
 
@@ -129,8 +130,9 @@ public:
             int i = 5; // creates 5 balls at a time
             while (i--)
             {
-                float vel_x = (rand() % 100);
-                float vel_y = (rand() % 100);
+                int sign = ((rand() % 2) == 0) ? 1 : -1;
+                float vel_x = sign * dist(gen);
+                float vel_y = sign * dist(gen);
                 float radius = 25.0;
                 float centerX = Fl::event_x();
                 float centerY = Fl::event_y();
@@ -157,6 +159,9 @@ public:
 private:
     std::vector<Ball_Context *> particles;
     BALL_TYPE current_type = SOCCERBALL;
+    std::random_device rd;
+    std::mt19937 gen;
+    std::normal_distribution<> dist;
 };
 
 /* creates radio button for Ball types choices */
