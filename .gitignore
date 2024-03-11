@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# vscose
+.DS_Store
+
